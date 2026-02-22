@@ -1,0 +1,72 @@
+Vous êtes un expert QA engineer senior spécialisé en test automation Python.
+Générez des cas de test pytest COMPLETS et EXÉCUTABLES pour la spécification
+suivante.
+Spécification de l'API :
+{spec}
+Règles OBLIGATOIRES :
+1. Utilisez uniquement pytest et la librairie requests
+2. Importez allure pour les annotations (@allure.title, @allure.severity)
+3. Couvrez TOUS ces scénarios : succès (2xx), non trouvé (404), données invalides
+(400)
+4. Chaque test doit avoir des assertions sur le status code ET le body JSON
+5. Utilisez des fixtures pytest (base_url, session) - ne pas hardcoder les URLs
+6. Ajoutez des commentaires expliquant POURQUOI on teste chaque cas
+7. Nommez les tests : test_<action>_<contexte> (ex: test_get_pet_success)
+Format de sortie : code Python pur uniquement, sans markdown ni backticks.
+load_dotenv() # Charge les variables depuis le fichier .env
+class TestGenerator:
+ """Génère des tests pytest à partir d'une spécification d'API via un LLM."""
+ def __init__(self, model: str = 'claude-opus-4-6'):
+ """
+ Initialise le générateur.
+ Args:
+ model: Le modèle Claude à utiliser.
+ """
+ self.client = anthropic.Anthropic(
+ api_key=os.getenv('ANTHROPIC_API_KEY')
+ )
+ self.model = model
+ # Charger le template de prompt depuis le fichier
+ prompt_path = Path('config/prompts/test_gen.txt')
+ self.prompt_template = prompt_path.read_text(encoding='utf-8')
+ def generate(self, spec: str, output_file: str = None) -> str:
+ """
+ Génère des tests pytest à partir d'une spécification.
+ Args:
+ spec : Description de l'API ou endpoint à tester.
+ output_file: Si fourni, sauvegarde le code dans ce fichier.
+ Returns:
+ Le code Python généré sous forme de string.
+ """
+ print(f'[TestGenerator] Génération en cours pour : {spec[:80]}...')
+ # Injecter la spec dans le template de prompt
+ prompt = self.prompt_template.format(spec=spec)
+ # Appel à l'API Claude
+ response = self.client.messages.create(
+ model=self.model,
+ max_tokens=4096,
+ messages=[{'role': 'user', 'content': prompt}]
+ )
+ generated_code = response.content[0].text
+ # Sauvegarder dans un fichier si demandé
+ if output_file:
+ Path(output_file).write_text(generated_code, encoding='utf-8')
+ print(f'[TestGenerator] Tests sauvegardés dans : {output_file}')
+return generated_code
+# ── DÉMONSTRATION ──────────────────────────────────────────
+if __name__ == '__main__':
+ spec = '''
+ Endpoint : GET /pet/{petId}
+ Base URL : https://petstore.swagger.io/v2
+ Description : Retourne les détails d\'un animal par son ID numérique
+ Paramètres : petId (integer, requis, dans le path)
+ Réponses :
+ - 200 : Objet Pet (id, name, status, photoUrls, tags)
+ - 404 : Pet non trouvé
+ - 400 : ID invalide (format non numérique)
+ '''
+ gen = TestGenerator()
+ output = 'core/qa_engine/api_tests/test_generated_ai.py'
+ code = gen.generate(spec, output_file=output)
+ print('\n=== APERÇU DU CODE GÉNÉRÉ (500 premiers caractères) ===')
+ print(code[:500])

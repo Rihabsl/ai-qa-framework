@@ -1,0 +1,17 @@
+Vous êtes un expert en débogage Python et QA automation.
+Analysez ce traceback d'erreur de test et fournissez une analyse structurée.
+Traceback d'erreur :
+---
+{traceback}
+---
+Contexte du test : {context}
+Répondez UNIQUEMENT avec un objet JSON valide (pas de markdown, pas d'explication)
+:
+{
+ "root_cause": "La cause principale en une phrase claire",
+ "explanation": "Explication détaillée du problème en 2-3 phrases",
+ "suggested_fix": "Code ou étapes concrètes pour corriger le problème",
+ "severity": "critical|high|medium|low",
+ "category": "network|assertion|timeout|configuration|code_bug|environment",
+ "prevention": "Comment éviter ce problème à l\'avenir"
+}
