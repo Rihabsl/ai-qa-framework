@@ -38,11 +38,9 @@ class TestSauceDemo:
         error = page.locator('[data-test="error"]')
         assert error.is_visible()
 
-    @allure.title('Self-healing — sélecteur cassé réparé par IA')
-    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.skip(reason="Requires Anthropic API credits")
     @allure.title('Self-healing — sélecteur cassé réparé par IA')
-    def test_self_healing_demo(self, page, healer):
+    @allure.severity(allure.severity_level.NORMAL)
     def test_self_healing_demo(self, page, healer):
         page.goto(SITE_URL)
         healer.safe_fill(page, '#broken-username',
