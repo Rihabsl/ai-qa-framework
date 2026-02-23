@@ -1,8 +1,5 @@
 code config/prompts/test_gen.txt
 ```
-
-**Sélectionne tout** avec **Ctrl+A**, **supprime tout**, puis colle uniquement ceci :
-```
 Vous êtes un expert QA engineer senior spécialisé en test automation Python.
 Générez des cas de test pytest COMPLETS et EXÉCUTABLES pour la spécification suivante.
 
